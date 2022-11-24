@@ -1,73 +1,40 @@
-import { useState } from 'react'
-import styles from 'styles/app.module.scss'
+import React, { useEffect } from 'react'
+import { HashRouter as Router, Route, Switch } from 'react-router-dom'
+import PageLoading from '@/components/base/page-loading'
+import constantMng from '@/utils/constant-mng'
+import service from '@/service'
+
+const OuterLayout = React.lazy(() => import(/* webpackChunkName:"outer-layout" */ '@/layouts/outer-layout'))
+const InnerLayout = React.lazy(() => import(/* webpackChunkName:"inner-layout" */ '@/layouts/inner-layout'))
 
 const App: React.FC = () => {
-  const [count, setCount] = useState(0)
+	// 初始化常量表
+	useEffect(() => {
+		const initTable = async () => {
+			const res = await service.getConstant()
+			constantMng.initGroup(res)
+		}
+		initTable()
+	}, [])
 
-  return (
-    <div className={styles.app}>
-      <header className={styles.appHeader}>
-        <div className={styles.logos}>
-          <div className={styles.imgBox}>
-            <img
-              src='./electron.png'
-              style={{ height: '24vw' }}
-              className={styles.appLogo}
-              alt="electron"
-            />
-          </div>
-          <div className={styles.imgBox}>
-            <img
-              src='./vite.svg'
-              style={{ height: '19vw' }}
-              alt="vite"
-            />
-          </div>
-          <div className={styles.imgBox}>
-            <img
-              src='./react.svg'
-              style={{ maxWidth: '100%' }}
-              className={styles.appLogo}
-              alt="logo"
-            />
-          </div>
-        </div>
-        <p>Hello Electron + Vite + React!</p>
-        <p>
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <div>
-          <a
-            className={styles.appLink}
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className={styles.appLink}
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-          <div className={styles.staticPublic}>
-            Place static files into the{' '}
-            <code>/public</code> folder
-            <img style={{ width: 77 }} src="./node.png" />
-          </div>
-        </div>
-      </header>
-    </div>
-  )
+	return (
+		<Router>
+			<React.Suspense fallback={<PageLoading />}>
+				<Switch>
+					{/* 这两个路由是父路由，不能设置严格匹配。
+                当url导航到子路由时，需要先匹配到父路由，再匹配子路由。
+                如果父路由是exact模式，那么url为“/account/login”时，这个url就无法匹配到路由“/account”，也就无法继续往下匹配路由“/account/login”。
+             */}
+					<Route path="/account" element={<OuterLayout />} />
+					{/*
+              由于没有设置exact，只要url中包含"/",就会与这个路由匹配成功，所以必须将它写在最后。
+              如果写在最前面，比如url为“/account/login”时，也会匹配成功，
+             */}
+					<Route path="/" element={ <InnerLayout />} />
+				</Switch>
+			</React.Suspense>
+		</Router>
+	)
 }
 
 export default App

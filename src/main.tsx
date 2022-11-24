@@ -1,13 +1,17 @@
 import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './samples/node-api'
-import 'styles/index.css'
+import ReactDOM from 'react-dom'
+import { ConfigProvider } from 'antd'
+import zh_CN from 'antd/es/locale-provider/zh_CN'
+import App from '@/App'
+import '@/assets/styles/app.less'
+// import '@/mock'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+ReactDOM.render(
+	<ConfigProvider locale={zh_CN}>
+		<App />
+	</ConfigProvider>,
+	document.getElementById('root')
 )
 
-postMessage({ payload: 'removeLoading' }, '*')
+
+

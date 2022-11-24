@@ -17,6 +17,15 @@ export default defineConfig({
       'styles': path.join(__dirname, 'src/assets/styles'),
     },
   },
+  css: {
+    // css预处理器
+    preprocessorOptions: {
+      less: {
+        charset: false,
+        additionalData: '@import "./src/assets/styles/variable.less";',
+      },
+    },
+  },
   plugins: [
     react(),
     electron({
