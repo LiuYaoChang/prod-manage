@@ -6,15 +6,27 @@ import electron from 'vite-electron-plugin'
 import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin'
 import renderer from 'vite-plugin-electron-renderer'
 import pkg from './package.json'
-
+import inject  from '@rollup/plugin-inject'
 rmSync(path.join(__dirname, 'dist-electron'), { recursive: true, force: true })
-
+import { viteMockServe } from 'vite-plugin-mock'
+const resolve = dir => path.resolve(process.cwd(), dir)
+import { UserConfigExport, ConfigEnv } from 'vite'
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
       '@': path.join(__dirname, 'src'),
       'styles': path.join(__dirname, 'src/assets/styles'),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      less: {
+        modifyVars: {
+            hack: `true; @import (reference) "${resolve("src/assets/styles/base.less")}";`,
+          },
+        javascriptEnabled: true,
+      },
     },
   },
   plugins: [
@@ -41,6 +53,14 @@ export default defineConfig({
     renderer({
       nodeIntegration: true,
     }),
+    inject({
+      $request: resolve('src/utils/request.ts' ),
+      // $message: resolve('node_modules/antd/es/message/index.js')
+    }),
+    viteMockServe({
+      localEnabled: true,
+      mockPath: './mock'
+    })
   ],
   server: process.env.VSCODE_DEBUG ? (() => {
     const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
@@ -50,6 +70,9 @@ export default defineConfig({
     }
   })() : undefined,
   clearScreen: false,
+  build: {
+    sourcemap: true,
+  }
 })
 
 function debounce<Fn extends (...args: any[]) => void>(fn: Fn, delay = 299) {
