@@ -12,7 +12,7 @@ import './style.less'
 const Fc: React.FC = () => {
 	const history = useHistory()
 	// 是否折叠侧边菜单
-	const [collapse, setCollapse] = useState(false)
+	const [collapsed, setCollapse] = useState(false)
 	// 路由配置
 	const [routeMap, setRouteMap] = useState<IRoute[]>([])
 
@@ -40,16 +40,17 @@ const Fc: React.FC = () => {
 				width={160}
 				trigger={null}
 				collapsible={true}
-				collapsed={collapse}
+				collapsed={collapsed}
 			>
-				<SideBar routeMap={routeMap} />
+				<SideBar routeMap={routeMap} collapsed={collapsed} />
+				{/* <SideBar collapsed={collapsed} /> */}
 			</Layout.Sider>
 
 			<Layout id="layoutMain" className="inner-layout__main">
-				<HeaderBar collapse={collapse} onTrigger={triggerCollapse} />
+				<HeaderBar collapse={collapsed} onTrigger={triggerCollapse} />
 
 				<div className="content">
-					{/* <InnerRouter routeMap={routeMap} /> */}
+					<InnerRouter routeMap={routeMap} />
 				</div>
 
 				<BackTop

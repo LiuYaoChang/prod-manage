@@ -9,6 +9,7 @@ import NavLink from './NavLink'
 import './style.less'
 
 interface IProps {
+  collapsed: boolean;
 	routeMap: IRoute[]
 }
 
@@ -27,7 +28,7 @@ const renderThumb = (props: any) => {
 	return <div style={{ ...style, ...thumbStyle }} {...rest} />
 }
 
-const SiderBar: React.FC<IProps> = ({ routeMap }) => {
+const SiderBar: React.FC<IProps> = ({ routeMap, collapsed }) => {
 	const location = useLocation()
 
 	// 当前激活的菜单
@@ -44,17 +45,18 @@ const SiderBar: React.FC<IProps> = ({ routeMap }) => {
 	// 根据路由配置生成菜单
 	const getMenuItem = (route: IRoute) => {
 		const { title, path, icon, children } = route
+    const menuIcon = 'ant-menu-item-icon ' + icon;
 
 		if (children) {
 			return (
-				<Menu.SubMenu key={path + ''} title={title}>
+				<Menu.SubMenu key={path + ''} icon={icon ? <i className={menuIcon} /> : null} title={title}>
 					{children.map((route: IRoute) => getMenuItem(route))}
 				</Menu.SubMenu>
 			)
 		}
 		return (
 			<Menu.Item key={path + ''}>
-				<NavLink path={path + ''} icon={icon} title={title} />
+				<NavLink path={path + ''} icon={icon ? menuIcon : undefined } title={title} />
 			</Menu.Item>
 		)
 	}
@@ -68,7 +70,6 @@ const SiderBar: React.FC<IProps> = ({ routeMap }) => {
 						<span className="title">Admin</span>
 					</Link>
 				</div>
-
 				<Menu theme="dark" mode="inline" selectedKeys={[activeMenu]} onClick={handelClickMenu}>
 					{routeMap.map(route => getMenuItem(route))}
 				</Menu>
