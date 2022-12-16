@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@antv/data-set": "^0.11.8",
+    "@reduxjs/toolkit": "^1.9.1",
     "@rollup/plugin-inject": "^5.0.2",
     "@types/mockjs": "^1.0.7",
     "antd": "^5.0.6",
@@ -25,6 +26,9 @@
     "mobx": "^6.7.0",
     "mobx-react": "^7.6.0",
     "react-custom-scrollbars-2": "^4.5.0",
+    "react-redux": "^8.0.5",
+    "redux": "^4.2.0",
+    "redux-saga": "^1.2.2",
     "vite-plugin-mock": "^2.9.6"
   },
   "devDependencies": {

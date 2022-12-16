@@ -6,12 +6,15 @@ import accountStore from '@/store/account'
 import { createCaptcha } from './util'
 import service from './service'
 import './style.less'
+import { useAppDispatch } from '@/hooks/redux'
+import { loginAction } from '@/store/modules/account'
 
 /**
  * 登陆页
  */
 
 const Login: React.FC = () => {
+  const dispatch = useAppDispatch()
 	const history = useHistory()
 	const canvasRef = useRef(null)
 	const [captcha, setCaptcha] = useState('')
@@ -27,10 +30,11 @@ const Login: React.FC = () => {
 
 	// 提交
 	const handleFinish = async (values: any) => {
-		const data = await service.login(values)
-		const token = data.token
-		$request.setHeader({ Authorization: token })
-		accountStore.setToken(token)
+		// const data = await service.login(values)
+    await dispatch(loginAction(values))
+		// const token = data.token
+		// $request.setHeader({ Authorization: token })
+		// accountStore.setToken(token)
 		history.replace('/dashboard')
 	}
 

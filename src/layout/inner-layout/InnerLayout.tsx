@@ -8,8 +8,9 @@ import HeaderBar from './components/header-bar'
 import SideBar from './components/side-bar'
 import service from './service'
 import './style.less'
-
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 const Fc: React.FC = () => {
+  const token = useAppSelector((state) => state.account.token)
 	const history = useHistory()
 	// 是否折叠侧边菜单
 	const [collapsed, setCollapse] = useState(false)
@@ -17,7 +18,6 @@ const Fc: React.FC = () => {
 	const [routeMap, setRouteMap] = useState<IRoute[]>([])
 
 	useEffect(() => {
-		const token = accountStore.token
 		if (!token) {
 			history.replace('/account/login')
 		} else {
