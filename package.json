@@ -28,6 +28,7 @@
     "react-custom-scrollbars-2": "^4.5.0",
     "react-redux": "^8.0.5",
     "redux": "^4.2.0",
+    "redux-persist": "^6.0.0",
     "redux-saga": "^1.2.2",
     "vite-plugin-mock": "^2.9.6"
   },

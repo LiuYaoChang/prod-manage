@@ -1,2 +1,2 @@
-export { default, increment, decrement, incrementByAmount } from './slice';
+export { default, increment, decrement, incrementByAmount, AccountState } from './slice';
 export { loginAction } from './thunk';

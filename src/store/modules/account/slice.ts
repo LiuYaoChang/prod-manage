@@ -2,7 +2,7 @@ import { EStoreNamespace } from '@/store/constants';
 import { createSlice } from '@reduxjs/toolkit'
 import { loginAction } from './thunk'
 // Define a type for the slice state
-interface AccountState {
+export interface AccountState {
   token: string;
   value: number
 }
