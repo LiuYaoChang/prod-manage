@@ -4,9 +4,13 @@ import { Menu, Dropdown, Avatar } from 'antd'
 import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons'
 import accountStore from '@/store/account'
 import './style.less'
-
+import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { setToken } from '@/store/modules/account'
 const AvatarMenu: React.FC = () => {
-	const history = useHistory()
+  const history = useHistory()
+  const dispatch = useAppDispatch()
+
+  const accountInfo = useAppSelector(state => state.account.accountInfo)
 
 	const handleMenuClick = ({ key }: { key: any }) => {
 		switch (key) {
@@ -15,7 +19,7 @@ const AvatarMenu: React.FC = () => {
 			case 'setting':
 				break
 			case 'logout':
-				accountStore.setToken('')
+        dispatch(setToken(''))
 				history.replace('/account/login')
 				break
 			default:
@@ -44,8 +48,8 @@ const AvatarMenu: React.FC = () => {
 	return (
 		<Dropdown overlay={getMenuList}>
 			<div className="header-bar-avatar">
-				<Avatar src={accountStore.accountInfo.avatar} />
-				<div className="username">{accountStore.accountInfo.name}</div>
+				<Avatar src={accountInfo.avatar} />
+				<div className="username">{accountInfo.name}</div>
 			</div>
 		</Dropdown>
 	)

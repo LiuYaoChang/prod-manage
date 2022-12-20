@@ -1,2 +1,3 @@
-export { default, increment, decrement, incrementByAmount, AccountState } from './slice';
-export { loginAction } from './thunk';
+
+export { default, increment, decrement, incrementByAmount, setToken } from './slice';
+export { loginAction, getUserInfoAction } from './thunk';

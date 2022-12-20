@@ -9,8 +9,12 @@ import SideBar from './components/side-bar'
 import service from './service'
 import './style.less'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { getUserInfoAction } from '@/store/modules/account'
+import { PayloadAction } from '@reduxjs/toolkit'
 const Fc: React.FC = () => {
+  const dispatch = useAppDispatch()
   const token = useAppSelector((state) => state.account.token)
+  const accountInfo = useAppSelector((state) => state.account.accountInfo)
 	const history = useHistory()
 	// 是否折叠侧边菜单
 	const [collapsed, setCollapse] = useState(false)
@@ -21,10 +25,9 @@ const Fc: React.FC = () => {
 		if (!token) {
 			history.replace('/account/login')
 		} else {
-			service.getAccountInfo({ token }).then(res => {
-				accountStore.setAccountInfo(res)
-				setRouteMap(initRoutes(res.permission))
-			})
+      dispatch(getUserInfoAction({ token })).then(() => {
+        setRouteMap(initRoutes(accountInfo.permission))
+      });
 		}
 	}, [history])
 
