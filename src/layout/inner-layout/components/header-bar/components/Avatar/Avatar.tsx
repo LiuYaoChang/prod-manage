@@ -1,6 +1,6 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
-import { Menu, Dropdown, Avatar } from 'antd'
+import { Menu, Dropdown, Avatar, MenuProps } from 'antd'
 import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons'
 import accountStore from '@/store/account'
 import './style.less'
@@ -26,6 +26,23 @@ const AvatarMenu: React.FC = () => {
 				$message.warning('没有该操作')
 		}
 	}
+  const items: MenuProps['items'] = [
+    {
+      label: '个人中心',
+      icon: <UserOutlined />,
+      key: 'mine',
+    },
+    {
+      label: '个人设置',
+      icon: <SettingOutlined />,
+      key: 'setting',
+    },
+    {
+      label: '退出登录',
+      icon: <LogoutOutlined />,
+      key: 'logout',
+    },
+  ];
 
 	const getMenuList = () => (
 		<Menu onClick={handleMenuClick}>
@@ -46,7 +63,7 @@ const AvatarMenu: React.FC = () => {
 	)
 
 	return (
-		<Dropdown overlay={getMenuList}>
+		<Dropdown dropdownRender={getMenuList}>
 			<div className="header-bar-avatar">
 				<Avatar src={accountInfo.avatar} />
 				<div className="username">{accountInfo.name}</div>
