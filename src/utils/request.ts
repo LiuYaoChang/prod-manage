@@ -1,9 +1,17 @@
 import axios, { AxiosRequestConfig, AxiosInstance } from 'axios'
 import config from '@/config'
-
+const baseURL = import.meta.env.VITE_APP_BASE_API;
+console.log("🚀 ~ file: request.ts:4 ~ baseURL", baseURL)
+// import { useAppSelector } from '@/hooks/redux'
+import store from '@/store'
+import { isDef } from './share';
+import account from '@/store/account';
+import { setToken } from '@/store/modules/account';
+import { useHistory } from 'react-router-dom';
+// import { isDef } from './share';
 export class Request {
 	private baseConfig: AxiosRequestConfig = {
-		baseURL: config.domain,
+		baseURL: baseURL,
 		headers: {},
 		timeout: 8000,
 	}
@@ -72,6 +80,27 @@ export class Request {
 	private setReqInterceptors = () => {
 		this.instance.interceptors.request.use(
 			config => {
+
+        // 如果有token 要追加到请求头
+        // store
+        console.log("🚀 ~ file: request.ts:93 ~ Request ~ store", store)
+        const account = store.getState().account;
+        if (isDef(account) && isDef(account.token)) {
+          const originalHeaders = config.headers;
+          const headers = Object.assign({}, originalHeaders, {
+            token: account.token
+          })
+          config.headers = headers;
+        }
+        // const token = useAppSelector((state) => state.account.token);
+        // if (isDef(token)) {
+        //   const originalHeaders = config.headers;
+
+        //   const headers = Object.assign({}, originalHeaders, {
+        //     token
+        //   })
+        //   config.headers = headers;
+        // }
 				return config
 			},
 			err => {
@@ -86,9 +115,14 @@ export class Request {
 		this.instance.interceptors.response.use(
 			res => {
 				const { code, data, msg } = res.data
-				if (code === 200) {
+				if (code === 0) {
 					return data
-				}
+				} else if (code === 401) {
+          const history = useHistory();
+          store.dispatch(setToken({ token: '' }))
+          history.replace('/account/login')
+          return;
+        }
 				$message.error(msg || '获取数据失败')
 				return Promise.reject(res)
 			},

@@ -17,26 +17,29 @@ const InnerLayout = React.lazy(() => import(/* webpackChunkName:"inner-layout" *
 //   )
 // }
 
-import axios from 'axios'
+// import axios from 'axios'
+import { AjaxEffectFragment } from './utils/axios/effect'
 
 
 
 const App: React.FC = () => {
 	// 初始化常量表
 	useEffect(() => {
-    axios.get('/api/getUsers').then((res) => {
-      console.log("🚀 ~ file: App.tsx:18 ~ axios.get ~ res", res)
-    })
+    // axios.get('/api/getUsers').then((res) => {
+    //   console.log("🚀 ~ file: App.tsx:18 ~ axios.get ~ res", res)
+    // })
 		const initTable = async () => {
-			const res = await service.getConstant()
-			console.log("🚀 ~ file: App.tsx:38 ~ initTable ~ res", res)
-			constantMng.initGroup(res)
+			console.log("🚀 ~ file: App.tsx:31 ~ initTable ~ initTable")
+			// const res = await service.getConstant()
+			// console.log("🚀 ~ file: App.tsx:38 ~ initTable ~ res", res)
+			// constantMng.initGroup(res)
 		}
 		initTable()
 	}, [])
 
 	return (
 		<Router>
+      <AjaxEffectFragment />
 			<React.Suspense fallback={<PageLoading />}>
 				<Switch>
 					{/* 这两个路由是父路由，不能设置严格匹配。

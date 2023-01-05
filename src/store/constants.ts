@@ -1,3 +1,4 @@
 export enum EStoreNamespace {
-  ACCOUNT = 'account'
+  ACCOUNT = 'account',
+  SYSTEM = 'system'
 }

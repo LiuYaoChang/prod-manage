@@ -1,11 +1,12 @@
 import { IUserInfo } from '@/model/common';
 import { EStoreNamespace } from '@/store/constants';
 import { createSlice } from '@reduxjs/toolkit'
-import { loginAction, getUserInfoAction } from './thunk'
+import { loginAction, getUserInfoAction, getAccountMenusAction, getMenuListAction } from './thunk'
 // Define a type for the slice state
 
 export interface AccountState {
   token: string;
+  menuList: any[];
   	// 账户信息
 	accountInfo: IUserInfo;
   value: number
@@ -14,6 +15,7 @@ export interface AccountState {
 // Define the initial state using that type
 const initialState: AccountState = {
   token: '',
+  menuList: [],
   accountInfo: { roles: [], permission: [] },
   value: 0,
 }
@@ -45,8 +47,26 @@ export const accountSlice = createSlice({
       state.token = action.payload.token;
       // state.token = action.payload;
     })
+    builder.addCase(loginAction.rejected, (state, action) => {
+      console.log("🚀 ~ file: slice.ts:51 ~ builder.addCase ~ loginAction.rejected", action)
+      // state.token = action.payload.token;
+      // state.token = action.payload;
+    })
     builder.addCase(getUserInfoAction.fulfilled, (state, action) => {
       state.accountInfo = action.payload;
+      // state.token = action.payload;
+    })
+    builder.addCase(getAccountMenusAction.fulfilled, (state, action) => {
+      state.menuList = action.payload;
+      // state.token = action.payload;
+    })
+    builder.addCase(getMenuListAction.fulfilled, (state, action) => {
+      state.menuList = action.payload;
+      // state.token = action.payload;
+    })
+    builder.addCase(getAccountMenusAction.rejected, (state, action) => {
+      console.log("🚀 ~ file: slice.ts:59 ~ builder.addCase ~ action", action)
+      // state.menuList = action.payload;
       // state.token = action.payload;
     })
   }

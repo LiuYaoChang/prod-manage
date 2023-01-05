@@ -44,7 +44,7 @@ const Login: React.FC = () => {
 			<Form onFinish={handleFinish}>
 				<Form.Item
 					label={<div className="form-item__label">账号</div>}
-					name="account"
+					name="username"
 					validateTrigger="onBlur"
 					initialValue="admin"
 					rules={[{ required: true, message: '账号不能为空' }]}
@@ -56,14 +56,15 @@ const Login: React.FC = () => {
 					label={<div className="form-item__label">密码</div>}
 					name="password"
 					validateTrigger="onBlur"
-					initialValue="admin123456"
+					initialValue="admin"
 					rules={[
 						{
 							required: true,
 							message: '密码不能为空！',
 						},
 						{
-							pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/,
+							// pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,20}$/,
+							pattern: /^\w{1,20}$/,
 							message: '密码为6~20位，且需要包含数字和字母！',
 						},
 					]}

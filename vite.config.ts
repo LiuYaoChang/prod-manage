@@ -54,7 +54,7 @@ export default defineConfig({
       nodeIntegration: true,
     }),
     inject({
-      $request: resolve('src/utils/request.ts' ),
+      $request: resolve('src/utils/axios/request.ts' ),
       // $message: resolve('node_modules/antd/es/message/index.js')
     }),
     viteMockServe({

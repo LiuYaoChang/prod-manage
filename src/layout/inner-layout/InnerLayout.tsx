@@ -9,7 +9,7 @@ import SideBar from './components/side-bar'
 import service from './service'
 import './style.less'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
-import { getUserInfoAction } from '@/store/modules/account'
+import { getAccountMenusAction, getUserInfoAction } from '@/store/modules/account'
 import { PayloadAction } from '@reduxjs/toolkit'
 const Fc: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -22,9 +22,14 @@ const Fc: React.FC = () => {
 	const [routeMap, setRouteMap] = useState<IRoute[]>([])
 
 	useEffect(() => {
-		if (!token) {
+    console.log("🚀 ~ file: innerLayout.tsx:26 ~ useEffect ~ token", token)
+		if (!token || token === '') {
+      console.log("🚀 ~ file: innerLayout.tsx:26 ~ useEffect ~ token", token)
 			history.replace('/account/login')
 		} else {
+      dispatch(getAccountMenusAction({ token})).then(menus => {
+        console.log("🚀 ~ file: innerLayout.tsx:29 ~ dispatch ~ menus", menus);
+      })
       dispatch(getUserInfoAction({ token })).then(() => {
         setRouteMap(initRoutes(accountInfo.permission))
       });

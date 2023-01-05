@@ -29,6 +29,7 @@ const renderThumb = (props: any) => {
 }
 
 const SiderBar: React.FC<IProps> = ({ routeMap, collapsed }) => {
+	console.log("🚀 ~ file: SideBar.tsx:32 ~ routeMap", routeMap)
 	const location = useLocation()
 
 	// 当前激活的菜单
