@@ -53,7 +53,7 @@ export const accountSlice = createSlice({
       // state.token = action.payload;
     })
     builder.addCase(getUserInfoAction.fulfilled, (state, action) => {
-      state.accountInfo = action.payload;
+      // state.accountInfo = action.payload;
       // state.token = action.payload;
     })
     builder.addCase(getAccountMenusAction.fulfilled, (state, action) => {

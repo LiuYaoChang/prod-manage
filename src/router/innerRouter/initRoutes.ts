@@ -11,22 +11,22 @@ const routeMap = [dashboardRoute, chartRoute, blankRoute, formRoute, articleRout
 
 // 根据路由名称获取可访问的路由表
 const filterRouteMap = (routeNames: string[], routeMap: IRoute[]) => {
-	const acceptedRouteMap: IRoute[] = []
-	routeMap.forEach((route: IRoute) => {
-		// 如果一级路由的名称存在路由权限表中，则它之下的所有子路由都可访问
-		if (routeNames.includes(route.name)) {
-			acceptedRouteMap.push(route)
-		} else {
-			// 如果一级路由的名称不在路由权限表中，再看它的哪些子路由名称在路由权限表中
-			if (route.children) {
-				route.children = filterRouteMap(routeNames, route.children)
-				// 如果有子路由可访问，再添加。
-				if (route.children.length > 0) {
-					acceptedRouteMap.push(route)
-				}
-			}
-		}
-	})
+	// const acceptedRouteMap: IRoute[] = []
+	// routeMap.forEach((route: IRoute) => {
+	// 	// 如果一级路由的名称存在路由权限表中，则它之下的所有子路由都可访问
+	// 	if (routeNames.includes(route.name)) {
+	// 		acceptedRouteMap.push(route)
+	// 	} else {
+	// 		// 如果一级路由的名称不在路由权限表中，再看它的哪些子路由名称在路由权限表中
+	// 		if (route.children) {
+	// 			route.children = filterRouteMap(routeNames, route.children)
+	// 			// 如果有子路由可访问，再添加。
+	// 			if (route.children.length > 0) {
+	// 				acceptedRouteMap.push(route)
+	// 			}
+	// 		}
+	// 	}
+	// })
 	return [userRoute, systemRoutes]
 }
 

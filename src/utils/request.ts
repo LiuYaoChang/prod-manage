@@ -5,9 +5,7 @@ console.log("🚀 ~ file: request.ts:4 ~ baseURL", baseURL)
 // import { useAppSelector } from '@/hooks/redux'
 import store from '@/store'
 import { isDef } from './share';
-import account from '@/store/account';
 import { setToken } from '@/store/modules/account';
-import { useHistory } from 'react-router-dom';
 // import { isDef } from './share';
 export class Request {
 	private baseConfig: AxiosRequestConfig = {
@@ -118,9 +116,7 @@ export class Request {
 				if (code === 0) {
 					return data
 				} else if (code === 401) {
-          const history = useHistory();
           store.dispatch(setToken({ token: '' }))
-          history.replace('/account/login')
           return;
         }
 				$message.error(msg || '获取数据失败')

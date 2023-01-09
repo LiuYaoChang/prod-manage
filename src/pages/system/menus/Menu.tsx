@@ -72,42 +72,35 @@ const MenuTable: React.FC = () => {
   const columns: ColumnsType<DataType> = [
     {
       title: '名称',
-      width: 200,
       dataIndex: 'name',
       key: 'name'
     },
     {
       title: '上级菜单',
-      width: 200,
       dataIndex: 'parentName',
       key: 'parentName',
     },
     {
       title: '图标',
-      width: 100,
       dataIndex: 'icon',
       key: 'icon',
     },
     {
       title: '类型',
-      width: 100,
       key: 'type',
       dataIndex: 'type'
     },
     {
       title: '排序号',
-      width: 100,
       key: 'orderNum'
     },
     {
       title: '菜单URL',
-      width: 200,
       dataIndex: 'url',
       key: 'url'
     },
     {
       title: '授权标识',
-      width: 100,
       dataIndex: 'perms',
       key: 'perms'
     },
@@ -124,7 +117,8 @@ const MenuTable: React.FC = () => {
       ),
     }
   ];
-  return <Table rowKey="menuId" columns={columns} dataSource={menuList} />
+  // return <Table rowKey="menuId" columns={columns} dataSource={menuList} />
+  return <Table rowKey="menuId" columns={columns} dataSource={menuList} scroll={{ x: 'max-content' }} />
 };
 
 const MenuPage: React.FC = () => {

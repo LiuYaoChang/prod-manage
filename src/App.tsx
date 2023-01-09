@@ -18,7 +18,7 @@ const InnerLayout = React.lazy(() => import(/* webpackChunkName:"inner-layout" *
 // }
 
 // import axios from 'axios'
-import { AjaxEffectFragment } from './utils/axios/effect'
+// import { AjaxEffectFragment } from './utils/axios/effect'
 
 
 
@@ -39,7 +39,7 @@ const App: React.FC = () => {
 
 	return (
 		<Router>
-      <AjaxEffectFragment />
+      {/* <AjaxEffectFragment /> */}
 			<React.Suspense fallback={<PageLoading />}>
 				<Switch>
 					{/* 这两个路由是父路由，不能设置严格匹配。
