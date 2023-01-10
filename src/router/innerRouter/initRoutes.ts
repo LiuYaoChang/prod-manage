@@ -1,5 +1,5 @@
 import { IPermission } from '@/model/common'
-import IRoute from './IRoute'
+import IRoute from '@/types/IRoute'
 import dashboardRoute from './modules/dashboard'
 import blankRoute from './modules/blank'
 import chartRoute from './modules/chart'
@@ -7,27 +7,27 @@ import formRoute from './modules/form'
 import userRoute from './modules/user'
 import articleRoute from './modules/article'
 import systemRoutes from './modules/system'
-const routeMap = [dashboardRoute, chartRoute, blankRoute, formRoute, articleRoute]
+const routeMap = [dashboardRoute, chartRoute, blankRoute, formRoute, articleRoute, systemRoutes, userRoute]
 
 // 根据路由名称获取可访问的路由表
-const filterRouteMap = (routeNames: string[], routeMap: IRoute[]) => {
-	// const acceptedRouteMap: IRoute[] = []
-	// routeMap.forEach((route: IRoute) => {
-	// 	// 如果一级路由的名称存在路由权限表中，则它之下的所有子路由都可访问
-	// 	if (routeNames.includes(route.name)) {
-	// 		acceptedRouteMap.push(route)
-	// 	} else {
-	// 		// 如果一级路由的名称不在路由权限表中，再看它的哪些子路由名称在路由权限表中
-	// 		if (route.children) {
-	// 			route.children = filterRouteMap(routeNames, route.children)
-	// 			// 如果有子路由可访问，再添加。
-	// 			if (route.children.length > 0) {
-	// 				acceptedRouteMap.push(route)
-	// 			}
-	// 		}
-	// 	}
-	// })
-	return [userRoute, systemRoutes]
+const filterRouteMap = (routeNames: number[], routeMap: IRoute[]) => {
+	const acceptedRouteMap: IRoute[] = []
+	routeMap.forEach((route: IRoute) => {
+		// 如果一级路由的名称存在路由权限表中，则它之下的所有子路由都可访问
+		if (routeNames.includes(route.menuId as number)) {
+			acceptedRouteMap.push(route)
+		} else {
+			// 如果一级路由的名称不在路由权限表中，再看它的哪些子路由名称在路由权限表中
+			if (route.children) {
+				route.children = filterRouteMap(routeNames, route.children)
+				// 如果有子路由可访问，再添加。
+				if (route.children.length > 0) {
+					acceptedRouteMap.push(route)
+				}
+			}
+		}
+	})
+	return acceptedRouteMap
 }
 
 
@@ -86,10 +86,10 @@ const filterRouteMap = (routeNames: string[], routeMap: IRoute[]) => {
 // }
 
 // 获取可访问的路由表
-const initRoutes = (permission: IPermission[] = []) => {
-	const routeNames = permission.map(item => item.name)
+const initRoutes = (permission: number[] = []) => {
+	const menuIds = permission.map(item => item);
 	// const routes = filterRouteMap(routeNames, routeMap)
-	return filterRouteMap(routeNames, routeMap)
+	return filterRouteMap(menuIds, routeMap)
 }
 
 export default initRoutes

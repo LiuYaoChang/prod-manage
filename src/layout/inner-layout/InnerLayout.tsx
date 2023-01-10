@@ -27,11 +27,12 @@ const Fc: React.FC = () => {
       console.log("🚀 ~ file: innerLayout.tsx:26 ~ useEffect ~ token", token)
 			history.replace('/account/login')
 		} else {
-      dispatch(getAccountMenusAction({ token})).then(menus => {
-        console.log("🚀 ~ file: innerLayout.tsx:29 ~ dispatch ~ menus", menus);
+      dispatch(getAccountMenusAction({ token})).then(({ payload }) => {
+        // console.log("🚀 ~ file: innerLayout.tsx:29 ~ dispatch ~ menus", menus);
+        setRouteMap(initRoutes(payload.permissions))
       })
       dispatch(getUserInfoAction({ token })).then(() => {
-        setRouteMap(initRoutes(accountInfo.permission))
+        // setRouteMap(initRoutes(accountInfo.permission))
       });
 		}
 	}, [history])

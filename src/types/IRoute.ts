@@ -6,6 +6,7 @@ type IconName = string;
 export default interface IRoute extends RouteProps {
 	// name供权限管理使用
 	name: string
+  menuId?: number;
 	// title供菜单使用
 	title: string
 	path: string
