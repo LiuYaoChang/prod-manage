@@ -2,15 +2,15 @@
 namespace YBDicts {
   export const CMenuTypes = [
     {
-      value: 'd',
+      value: 0,
       label: '目录'
     },
     {
-      value: 'm',
+      value: 1,
       label: '菜单'
     },
     {
-      value: 'b',
+      value: 2,
       label: '按钮'
     }
   ]

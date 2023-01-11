@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Form, Input, Modal, Popover, Radio, Select, Space, Table, Tag, Tree } from 'antd';
+import { Button, Cascader, Checkbox, Form, Input, InputNumber, Modal, Popover, Radio, Select, Space, Table, Tag, Tree } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { getMenuListAction } from '@/store/modules/system';
@@ -170,62 +170,59 @@ const MenuPage: React.FC = () => {
 }
 
 const MenuAddDialog: React.FC<IProps> = (props: IProps) => {
+
+  // const [isOpenTree, setIsOpenTree] = useState<boolean>(false);
+  const [nameLabel, setNameLabel] = useState<string>('名称')
   const menuList = useAppSelector((state) => state.system.menuList)
   const { isModalOpen, onOk, onCancel } = props;
-  const handleOk = onOk ? onOk : () => {};
+  // const handleOk = onOk ? onOk : () => {};
   const handleCancel = onCancel ? onCancel : () => {};
+  const handleOk = () => {
+    form.submit();
+  }
   const CMenuTypes = YBDicts.CMenuTypes;
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
-  const tailLayout = {
-    wrapperCol: { offset: 8, span: 16 },
-  };
-  const titleRender = (data: any) => {
-    return <span>{data.name}</span>
-  }
-  const treeData: DataNode[] = [
-    {
-      title: 'parent',
-      key: '0',
-      children: [
-        {
-          title: 'child 1',
-          key: '0-0',
-          disabled: true,
-        },
-        {
-          title: 'child 2',
-          key: '0-1',
-          disableCheckbox: true,
-        },
-      ],
-    },
-  ];
+  // const titleRender = (data: any) => {
+  //   return <span>{data.name}</span>
+  // }
   const [form] = Form.useForm();
-  const text = <span>上级菜单</span>;
-  const MenuTree = (
-    <div className="yb-menu-tree__wrap">
-      <Tree defaultSelectedKeys={['0-1']} defaultExpandAll treeData={menuList} blockNode titleRender={titleRender} />
-    </div>
-  )
-  const onGenderChange = (value: string) => {
-    switch (value) {
-      case 'male':
-        form.setFieldsValue({ note: 'Hi, man!' });
-        return;
-      case 'female':
-        form.setFieldsValue({ note: 'Hi, lady!' });
-        return;
-      case 'other':
-        form.setFieldsValue({ note: 'Hi there!' });
-        break;
-      default:
+  // const handleSelectParent = (keys: any[], {node}: { node: IMenu }) => {
+  //   console.log("🚀 ~ file: Menu.tsx:209 ~ handleSelectParent ~ ev", node.menuId)
+  //   console.log("🚀 ~ file: Menu.tsx:209 ~ handleSelectParent ~ keys", keys)
+  //   // setIsOpenTree(false)
+  // }
+  // const handleFocusParent = () => {
+  //   // setIsOpenTree(true);
+  // }
+
+  // const MenuTree = (
+  //   <div className="yb-menu-tree__wrap">
+  //     <Tree defaultExpandAll treeData={menuList} blockNode titleRender={titleRender} onSelect={handleSelectParent} />
+  //   </div>
+  // )
+  // 监听菜单类型变化
+  const type = Form.useWatch('type', form);
+  const parentName = Form.useWatch('parentName', form);
+  useEffect(() => {
+    // 拿取到的是数组ID
+    console.log("🚀 ~ file: Menu.tsx:208 ~ useEffect ~ parentName", parentName)
+    // form.setFieldValue('parentId', )
+  }, [parentName])
+  useEffect(() => {
+    console.log("🚀 ~ file: Menu.tsx:206 ~ useEffect ~ useEffect", type)
+    const menuType = CMenuTypes.find(item => (item.value === type));
+    if (menuType) {
+      setNameLabel(`${menuType.label}名称`)
     }
-  };
+  }, [type]);
 
   const onFinish = (values: any) => {
+    console.log(values);
+  };
+  const onFinishFailed = (values: any) => {
     console.log(values);
   };
 
@@ -243,39 +240,58 @@ const MenuAddDialog: React.FC<IProps> = (props: IProps) => {
     <>
       <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <div className="yb-menus-add-form">
-          <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
-          <Form.Item name="radio-group" label="类型">
-            <Radio.Group>
-              {
-                CMenuTypes.map(type => {
-                  return <Radio value={type.value}>{type.label}</Radio>
-                })
-              }
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item name="note" label="名称" rules={[{ required: true }]}>
-            <Input placeholder="名称" />
-          </Form.Item>
-          <Form.Item name="note" label="上级菜单" rules={[{ required: true }]}>
-            <Popover placement="top" title={text} content={MenuTree} trigger="click">
-              <Input />
-            </Popover>
-          </Form.Item>
-          <Form.Item name="note" label="菜单路由" rules={[{ required: true }]}>
-            <Input placeholder="菜单路由" />
-          </Form.Item>
-          {/* 不是目录可以配置 */}
-          <Form.Item name="note" label="授权标识" rules={[{ required: true }]}>
-            <Input placeholder="多个用逗号分隔, 如: user:list,user:create" />
-          </Form.Item>
-          {/* 非按钮可以配置 */}
-          <Form.Item name="note" label="排序号" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          {/* 非按钮可以配置 */}
-          <Form.Item name="note" label="菜单图标" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
+          <Form {...layout} initialValues={{ type: 0 }} form={form} name="control-hooks" onFinish={onFinish} onFinishFailed={onFinishFailed}>
+            <Form.Item name="type" label="类型">
+              <Radio.Group>
+                {
+                  CMenuTypes.map(type => {
+                    return <Radio value={type.value} key={type.value}>{type.label}</Radio>
+                  })
+                }
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item name="name" label={nameLabel} rules={[{ required: true, message: '菜单名称不能为空' }]}>
+              <Input placeholder={nameLabel} />
+            </Form.Item>
+            <Form.Item name="parentName" label="上级菜单" rules={[{ required: true, message: '上级菜单不能为空' }]}>
+              <Cascader
+                changeOnSelect
+                fieldNames={{ label: 'name', value: 'menuId', children: 'children' }}
+                options={menuList}
+                placeholder="Please select"
+              />
+              {/* <Popover placement="top" title={text} content={MenuTree} trigger="click">
+                <Input onFocus={handleFocusParent} />
+              </Popover> */}
+            </Form.Item>
+            {
+              type === 1
+              ? ( <Form.Item name="url" label="菜单路由" rules={[{ required: type === 1, message: '菜单URL不能为空' }]}>
+                <Input placeholder="菜单路由" />
+              </Form.Item>)
+              : null
+            }
+            {
+              type !== 0
+              ? ( <Form.Item name="perms" label="授权标识">
+                <Input placeholder="多个用逗号分隔, 如: user:list,user:create" />
+              </Form.Item>)
+              : null
+            }
+            {
+              type !== 2
+              ? ( <Form.Item name="orderNum" label="排序号">
+                <InputNumber style={{ width: '100%' }} min={0} />
+              </Form.Item>)
+              : null
+            }
+            {
+              type !== 2
+              ? ( <Form.Item name="icon" label="菜单图标">
+                <Input />
+              </Form.Item>)
+              : null
+            }
           </Form>
         </div>
       </Modal>
