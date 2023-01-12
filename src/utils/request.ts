@@ -6,6 +6,7 @@ console.log("🚀 ~ file: request.ts:4 ~ baseURL", baseURL)
 import store from '@/store'
 import { isDef } from './share';
 import { setToken } from '@/store/modules/account';
+import history from './history';
 // import { isDef } from './share';
 export class Request {
 	private baseConfig: AxiosRequestConfig = {
@@ -117,6 +118,7 @@ export class Request {
 					return data
 				} else if (code === 401) {
           store.dispatch(setToken({ token: '' }))
+          history.push('/account/login')
           return;
         }
 				$message.error(msg || '获取数据失败')

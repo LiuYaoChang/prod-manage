@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { HashRouter as Router, Route, Switch } from 'react-router-dom'
+import { Router, Route, Switch } from 'react-router-dom'
 import PageLoading from '@/components/base/page-loading'
 import constantMng from '@/utils/constant-mng'
 import service from '@/service'
+import history from './utils/history'
 // import IRoute from '@/types/IRoute'
 const OuterLayout = React.lazy(() => import(/* webpackChunkName:"outer-layout" */ '@/layout/outer-layout'))
 const InnerLayout = React.lazy(() => import(/* webpackChunkName:"inner-layout" */ '@/layout/inner-layout'))
@@ -38,7 +39,7 @@ const App: React.FC = () => {
 	}, [])
 
 	return (
-		<Router>
+		<Router history={history}>
       {/* <AjaxEffectFragment /> */}
 			<React.Suspense fallback={<PageLoading />}>
 				<Switch>
