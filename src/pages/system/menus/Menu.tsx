@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Cascader, Checkbox, Form, Input, InputNumber, Modal, Popover, Radio, Select, Space, Table, Tag, Tree } from 'antd';
+import { Button, Cascader, Form, Input, InputNumber, Modal, Radio, Select, Space, Spin, Table, Tag, Tree, TreeSelect } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
-import { getMenuListAction } from '@/store/modules/system';
+import { getMenuInfoAction, getMenuListAction, getSelectMenuListAction, updateMenuAction } from '@/store/modules/system';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-  import type { DataNode } from 'antd/es/tree';
 import YBDicts from '@/constants/dicts';
 import './style.scss'
+import { isDef } from '@/utils/share';
 // import { treeDataTranslate } from '@/utils/table';
 const { Option } = Select;
 interface DataType {
@@ -20,12 +20,14 @@ interface IFromProps {
   onAdd?: () => void;
 }
 interface ITableProps {
-  onEdit: (row: DataType) => void;
-  onDelete: (row: DataType) => void;
+  onEdit: (row: IMenu) => void;
+  onDelete: (row: IMenu) => void;
 }
 interface IProps {
+  id?: number;
   isModalOpen: boolean;
   onOk?: () => void;
+  onClose?: () => void;
   onCancel?: () => void;
 }
 
@@ -68,7 +70,7 @@ const MenuTable: React.FC<ITableProps> = (props: ITableProps) => {
   const { onDelete, onEdit } = props;
   const menuList = useAppSelector((state) => state.system.menuList)
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<IMenu> = [
     {
       title: '名称',
       dataIndex: 'name',
@@ -108,13 +110,13 @@ const MenuTable: React.FC<ITableProps> = (props: ITableProps) => {
       fixed: 'right',
       width: 150,
       key: 'action',
-      render: (_, record: DataType) => (
+      render: (_, record: unknown) => (
         <Space size="middle">
-          <Button type="primary" size={'small'} onClick={() => onEdit(record)}>
+          <Button type="primary" size={'small'} onClick={() => onEdit(record as IMenu)}>
             <EditOutlined />
             修改
           </Button>
-          <Button type="primary" size={'small'} danger onClick={() => onDelete(record)}>
+          <Button type="primary" size={'small'} danger onClick={() => onDelete(record as IMenu)}>
             <DeleteOutlined />
             删除
           </Button>
@@ -128,31 +130,49 @@ const MenuTable: React.FC<ITableProps> = (props: ITableProps) => {
 
 const MenuPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [id, setId] = useState<number>();
   const dispatch = useAppDispatch()
   useEffect(() => {
-    dispatch(getMenuListAction()).then((data) => {
-
-    })
+    loadTableData();
+    dispatch(getSelectMenuListAction())
   }, [])
+
+  // 加载列表数据
+  const loadTableData = () => {
+    setLoading(true);
+    dispatch(getMenuListAction())
+    .then(() => {
+
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
+    loadTableData();
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const handleModelClose = () => {
+    setId(undefined);
+  };
   // 删除
-  const handleDelete = (data: DataType) => {
+  const handleDelete = (data: IMenu) => {
     showModal();
     console.log("🚀 ~ file: Menu.tsx:147 ~ handleDelete ~ data", data)
   }
   // 编辑
-  const handleEdit = (data: DataType) => {
+  const handleEdit = (data: IMenu) => {
+    // menuId
+    setId(data.menuId);
     showModal();
     console.log("🚀 ~ file: Menu.tsx:151 ~ handleEdit ~ data", data)
   }
@@ -162,20 +182,66 @@ const MenuPage: React.FC = () => {
         <MenuForm onAdd={showModal}  />
       </div>
       <div className="yb-menu-list">
-        <MenuTable onDelete={handleDelete} onEdit={handleEdit} />
+        <Spin tip="Loading..." spinning={loading}>
+          <MenuTable onDelete={handleDelete} onEdit={handleEdit} />
+        </Spin>
       </div>
-      <MenuAddDialog isModalOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} />
+      <MenuAddDialog isModalOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} id={id} onClose={handleModelClose} />
     </div>
   );
 }
 
 const MenuAddDialog: React.FC<IProps> = (props: IProps) => {
-
+  const dispatch = useAppDispatch()
   // const [isOpenTree, setIsOpenTree] = useState<boolean>(false);
-  const [nameLabel, setNameLabel] = useState<string>('名称')
-  const menuList = useAppSelector((state) => state.system.menuList)
-  const { isModalOpen, onOk, onCancel } = props;
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>('新增菜单');
+  const [nameLabel, setNameLabel] = useState<string>('名称');
+  const menuList = useAppSelector((state) => state.system.selectMenuList);
+  console.log("🚀 ~ file: Menu.tsx:187 ~ menuList", menuList)
+  const originalSelectMenuList = useAppSelector((state) => state.system.originalSelectMenuList);
+  const menuInfo = useAppSelector((state) => state.system.menuInfo);
+  const { isModalOpen, onOk, onCancel, onClose, id } = props;
   // const handleOk = onOk ? onOk : () => {};
+  const getParentIds = (info: IMenu, ids: number[] = []): number[] => {
+    ids.unshift(info.menuId);
+    if (info.parentId !== 0) {
+      const parent = originalSelectMenuList.find((menu: IMenu) => (menu.menuId === info.parentId)) as IMenu;
+      if (isDef(parent)) {
+        return getParentIds(parent, ids);
+      }
+    } else {
+      ids.unshift(0);
+    }
+    return ids;
+  }
+  useEffect(() => {
+    // 存在ID就是编辑
+    if (isDef(id)) {
+      setIsEdit(true);
+      setTitle('编辑菜单');
+      // 加载表单详情
+      dispatch(getMenuInfoAction(id as number))
+    } else {
+      form.resetFields();
+      setTitle('新增菜单');
+      setIsEdit(false)
+    }
+  }, [id]);
+
+  useEffect(() => {
+    console.log("🚀 ~ file: Menu.tsx:207 ~ useEffect ~ menuInfo", menuInfo);
+    // 查找
+    form.setFieldValue('parentId', menuInfo.parentId);
+    form.setFieldValue('type', menuInfo.type);
+    form.setFieldValue('name', menuInfo.name);
+    form.setFieldValue('url', menuInfo.url);
+    form.setFieldValue('perms', menuInfo.perms);
+    form.setFieldValue('orderNum', menuInfo.orderNum);
+    form.setFieldValue('icon', menuInfo.icon);
+  }, [menuInfo])
+
   const handleCancel = onCancel ? onCancel : () => {};
   const handleOk = () => {
     form.submit();
@@ -205,12 +271,10 @@ const MenuAddDialog: React.FC<IProps> = (props: IProps) => {
   // )
   // 监听菜单类型变化
   const type = Form.useWatch('type', form);
-  const parentName = Form.useWatch('parentName', form);
+  const parentId = Form.useWatch('parentId', form);
   useEffect(() => {
-    // 拿取到的是数组ID
-    console.log("🚀 ~ file: Menu.tsx:208 ~ useEffect ~ parentName", parentName)
-    // form.setFieldValue('parentId', )
-  }, [parentName])
+    console.log("🚀 ~ file: Menu.tsx:208 ~ useEffect ~ parentName", parentId)
+  }, [parentId])
   useEffect(() => {
     console.log("🚀 ~ file: Menu.tsx:206 ~ useEffect ~ useEffect", type)
     const menuType = CMenuTypes.find(item => (item.value === type));
@@ -221,24 +285,52 @@ const MenuAddDialog: React.FC<IProps> = (props: IProps) => {
 
   const onFinish = (values: any) => {
     console.log(values);
+    const data:IMenuParams = {
+        'menuId': id,
+        'type': type,
+        'name': form.getFieldValue('name'),
+        'parentId': form.getFieldValue('parentId'),
+        'url': form.getFieldValue('url'),
+        'perms': form.getFieldValue('perms'),
+        'orderNum': form.getFieldValue('orderNum'),
+        'icon': form.getFieldValue('icon')
+    }
+    setLoading(true);
+    dispatch(updateMenuAction(data)).then(() => {
+      if (onOk) {
+        onOk();
+      }
+    }).finally(() => {
+      setLoading(false);
+    })
+    console.log("🚀 ~ file: Menu.tsx:290 ~ onFinish ~ data", data)
   };
   const onFinishFailed = (values: any) => {
     console.log(values);
   };
-
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+    onReset();
+  }
   const onReset = () => {
     form.resetFields();
   };
 
-  const onFill = () => {
-    form.setFieldsValue({
-      note: 'Hello world!',
-      gender: 'male',
-    });
-  };
+  const treeField = {
+    label: 'name',
+    value: 'menuId'
+  }
   return (
     <>
-      <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      <Modal
+        title={title}
+        confirmLoading={loading}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        afterClose={handleClose}>
         <div className="yb-menus-add-form">
           <Form {...layout} initialValues={{ type: 0 }} form={form} name="control-hooks" onFinish={onFinish} onFinishFailed={onFinishFailed}>
             <Form.Item name="type" label="类型">
@@ -253,12 +345,15 @@ const MenuAddDialog: React.FC<IProps> = (props: IProps) => {
             <Form.Item name="name" label={nameLabel} rules={[{ required: true, message: '菜单名称不能为空' }]}>
               <Input placeholder={nameLabel} />
             </Form.Item>
-            <Form.Item name="parentName" label="上级菜单" rules={[{ required: true, message: '上级菜单不能为空' }]}>
-              <Cascader
-                changeOnSelect
-                fieldNames={{ label: 'name', value: 'menuId', children: 'children' }}
-                options={menuList}
-                placeholder="Please select"
+            <Form.Item name="parentId" label="上级菜单" rules={[{ required: true, message: '上级菜单不能为空' }]}>
+              <TreeSelect
+                fieldNames={treeField}
+                style={{ width: '100%' }}
+                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                placeholder="上级菜单"
+                allowClear
+                treeDefaultExpandAll
+                treeData={menuList}
               />
               {/* <Popover placement="top" title={text} content={MenuTree} trigger="click">
                 <Input onFocus={handleFocusParent} />
