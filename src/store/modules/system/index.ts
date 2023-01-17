@@ -1,3 +1,3 @@
 
 export { default, setMenus } from './slice';
-export { getMenuListAction, getSelectMenuListAction, getMenuInfoAction, updateMenuAction } from './thunk';
+export { getMenuListAction, getSelectMenuListAction, getMenuInfoAction, updateMenuAction, getRoleListAction, updateRoleAction, getRoleInfoAction } from './thunk';

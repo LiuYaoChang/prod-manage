@@ -23,4 +23,16 @@ interface IMenus extends IMenu {
   list: Array<IMenus>;
 }
 
+interface IRole {
+  roleId: number;
+  remark: string;
+  menuIdList: number[];
+  createUserId?: string;
+  roleName: string;
+  createTime?: string;
+}
+interface IRoles extends IRole {
+  list: Array<IRoles>;
+}
+
 

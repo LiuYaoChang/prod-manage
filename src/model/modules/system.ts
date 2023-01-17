@@ -9,3 +9,14 @@ interface IMenuParams {
   icon?: string;
   orderNum: number;
 }
+
+interface IRoleParams {
+  roleId?: number;
+  roleName: string;
+  remark?: string;
+  menuIdList: number[];
+}
+
+interface IRoleQuery {
+  roleName: string;
+}

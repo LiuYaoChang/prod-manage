@@ -3,6 +3,7 @@ import { lazy } from 'react'
 import IRoute from '../IRoute'
 
 const Menu = lazy(() => import(/* webpackChunkName:"user" */ '@/pages/system/menus'))
+const Role = lazy(() => import(/* webpackChunkName:"user" */ '@/pages/system/role'))
 const User = lazy(() => import(/* webpackChunkName:"user" */ '@/pages/user'))
 
 const route: IRoute = {
@@ -20,8 +21,16 @@ const route: IRoute = {
 			component: Menu
 		},
 		{
-			name: 'user',
+			name: 'role',
       menuId: 3,
+			title: '角色管理',
+			path: '/system/role',
+			exact: true,
+			component: Role
+		},
+		{
+			name: 'user',
+      menuId: 2,
 			title: '用户管理',
 			path: '/system/user',
 			exact: true,
